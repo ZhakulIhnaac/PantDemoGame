@@ -82,6 +82,16 @@ namespace Assets.Scripts.Classes.Gameplay
                 // Spawn
                 var objectToSpawn = PoolDictionary[gameObjectToSpawn.tag].Dequeue();
 
+                /*
+                 Before spawning the new object into the scene, object to be spawned must be checked if it was already in the scene.
+                 In case of not moving the object in its first spawn, its first position's nodes remain obstructed and it becomes
+                 impossible to move to those nodes or place any building.
+                 */
+                if (objectToSpawn.activeSelf)
+                {
+                    NodeObstructionChange(objectToSpawn.transform.position, objectToSpawn, gameObjectToSpawn);
+                }
+
                 objectToSpawn.SetActive(true);
                 objectToSpawn.transform.position = spawnPosition;
                 objectToSpawn.transform.rotation = spawnRotation;
@@ -97,19 +107,6 @@ namespace Assets.Scripts.Classes.Gameplay
 
                 // Obstruct the nodes
                 NodeObstructionChange(spawnPosition, objectToSpawn, gameObjectToSpawn);
-                //var objBottomLeftPoint = (Vector2)spawnPosition + Vector2.left * objectToSpawn.GetComponent<Playable>().PlayableSize.x / 2 + Vector2.down * objectToSpawn.GetComponent<Playable>().PlayableSize.y / 2 + new Vector2(GameController.GridSystem.NodeRadius, GameController.GridSystem.NodeRadius); // transform.position will give the middle point and we will subtract the halves of the height and width to find bottom left point
-                //for (var i = 0; i < gameObjectToSpawn.GetComponent<Playable>().PlayableSize.x; i++) // For each grid square in width...
-                //{
-                //    for (var j = 0; j < gameObjectToSpawn.GetComponent<Playable>().PlayableSize.y; j++) // For each grid square in height...
-                //    {
-                //        var node = GameController.GridSystem.NodeFromWorldPosition(objBottomLeftPoint + new Vector2(i * GameController.GridSystem.NodeDiameter, j * GameController.GridSystem.NodeDiameter));
-
-                //        if (node != null)
-                //        {
-                //            node.IsObstructed = true;
-                //        }
-                //    }
-                //}
             }
         }
 

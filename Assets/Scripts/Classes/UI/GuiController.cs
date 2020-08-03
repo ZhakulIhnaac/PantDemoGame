@@ -45,7 +45,6 @@ namespace Assets.Scripts.Classes.UI
          */
         public void UpdatePowerText(float pPowerAmount) // Update the power amount text in GUI.
         {
-            Debug.Log("DEs");
             PowerAmountText.text = "Power Amount: " + pPowerAmount;
         }
 

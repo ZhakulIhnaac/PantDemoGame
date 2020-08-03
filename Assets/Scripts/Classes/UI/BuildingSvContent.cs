@@ -17,7 +17,7 @@ namespace Assets.Scripts.Classes.UI
         private float ButtonHeight => ButtonWidth; // Button height
         private float PlacementXPosition => transform.position.x - ContentFrameworkSize.x / 2 + HorizontalGap + ButtonWidth / 2; // X coordinate for the placement position for the first button.
         private float _placementYPosition; // Y coordinate for the placement position for the first button.
-        private int RowCount => Mathf.CeilToInt(ProduciblesList.Count / ColumnCount) * 11; // Number of rows in the scroll view.
+        private int RowCount => Mathf.CeilToInt(ProduciblesList.Count / ColumnCount) * 15; // Number of rows in the scroll view.
         public Vector2 ContentFrameworkSize => GetComponent<RectTransform>().rect.size; // Size of the content framework which will contain the buttons.
         public List<GameObject> ProduciblesList; // List contains every producible building's button.
         public List<GameObject> AllButtonsList; // List of buttons in content framework
@@ -67,7 +67,7 @@ namespace Assets.Scripts.Classes.UI
             {
                 for (var columnIndex = 1; columnIndex <= ColumnCount; columnIndex++) // For each column...
                 {
-                    if (producibleIndex >= ProduciblesList.Count * 11) continue;
+                    if (producibleIndex >= ProduciblesList.Count * 15) continue;
                     var newButton = Instantiate(ProduciblesList[producibleIndex % ProduciblesList.Count], transform); // New button to add to the content.
                     newButton.transform.position = new Vector2(PlacementXPosition + (columnIndex - 1) * (ButtonWidth + HorizontalGap), _placementYPosition - (rowIndex - 1) * (ButtonHeight + VerticalGap)); // Reposition the new button to the appropriate position.
                     AllButtonsList.Add(newButton);
