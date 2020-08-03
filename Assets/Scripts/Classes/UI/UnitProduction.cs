@@ -1,5 +1,7 @@
 ﻿using Assets.Scripts.Interfaces;
 using System.Collections.Generic;
+using Assets.Scripts.Classes.Gameplay;
+using Assets.Scripts.Classes.Playables;
 using UnityEngine;
 
 namespace Assets.Scripts.Classes
@@ -10,7 +12,7 @@ namespace Assets.Scripts.Classes
 
         public void SendToProduction()
         {
-            GameController.Instance.selectedGameObject.GetComponent<Barrack>().Produce(_unit);
+            GameController.Instance.SelectedGameObject.GetComponent<Barrack>().Produce(_unit);
         }
     }
 

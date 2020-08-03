@@ -241,8 +241,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HealthPoint: 50
-  BuildSound: {fileID: 0}
-  BuildingCost: 100
+  CreatedSound: {fileID: 8300000, guid: c4bf212ad5d67644db4c7677e1601475, type: 3}
+  PowerCost: 50
+  MoveSound: {fileID: 8300000, guid: d21489020605fc4468a66402e7f30cd9, type: 3}
   _stoppingDistance: 0
   _movingSpeed: 5
   _groundLayerMask:

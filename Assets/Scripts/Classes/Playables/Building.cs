@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Interfaces;
+﻿using Assets.Scripts.Classes.Gameplay;
+using Assets.Scripts.Interfaces;
 using UnityEngine;
 
 namespace Assets.Scripts.Classes
@@ -10,7 +11,7 @@ namespace Assets.Scripts.Classes
             GameController.Instance.EmptyTheSelected();
         }
 
-        public virtual void RightMouseClick()
+        public override void RightMouseClick()
         {
             GameController.Instance.EmptyTheSelected();
         }

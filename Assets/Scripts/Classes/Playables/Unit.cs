@@ -1,24 +1,26 @@
-﻿using Assets.Scripts.Interfaces;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Assets.Scripts.Classes.Gameplay;
+using Assets.Scripts.Constants;
+using Assets.Scripts.Interfaces;
 using UnityEngine;
 
-namespace Assets.Scripts.Classes
+namespace Assets.Scripts.Classes.Playables
 {
     public class Unit : Playable, IBuilding
     {
         private List<Node> _pathToFollow;
         private Node _targetNode;
+        public AudioClip MoveSound;
         [SerializeField] private float _stoppingDistance;
         [SerializeField] private float _movingSpeed;
         [SerializeField] private LayerMask _groundLayerMask;
 
-        void Start()
+        private void Start()
         {
             _pathToFollow = new List<Node>();
         }
 
-        void Update()
+        private void Update()
         {
             if (_pathToFollow.Count > 0 || _targetNode != null) // If there is a path to follow or a next target...
             {
@@ -61,22 +63,24 @@ namespace Assets.Scripts.Classes
 
         public override void RightMouseClick()
         {
-            Ray mouseRayToSend = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit2D checkGroundHit = Physics2D.Raycast(mouseRayToSend.origin, mouseRayToSend.direction, Mathf.Infinity, _groundLayerMask);
+            var mouseRayToSend = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var checkGroundHit = Physics2D.Raycast(mouseRayToSend.origin, mouseRayToSend.direction, Mathf.Infinity, _groundLayerMask);
 
             if (checkGroundHit.collider != null)
             {
-                //GridSystem.GridInstance.NodeFromWorldPosition();
                 Move(checkGroundHit.collider.gameObject.transform.position);
             }
         }
 
         public void Move(Vector2 moveTarget)
         {
+                AudioSource.clip = MoveSound;
+                AudioSource.PlayOneShot(MoveSound);
+
             var path = GameController.AStarPathfinding.FindPath(transform.position, moveTarget);
             if (path == null)
             {
-                SendWarningMessage("Cannot go there!");
+                SendWarningMessage(InGameDictionary.NoPathFoundWarning);
             }
             else
             {

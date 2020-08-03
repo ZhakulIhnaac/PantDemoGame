@@ -1,76 +1,100 @@
 ﻿using System;
 using System.Collections.Generic;
-using Assets.Scripts.Classes.Gameplay;
 using Assets.Scripts.Classes.GamePlay;
+using Assets.Scripts.Classes.UI;
 using Assets.Scripts.Interfaces;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Assets.Scripts.Classes
+namespace Assets.Scripts.Classes.Gameplay
 {
     public class GameController : MonoBehaviour, IMainGame
     {
-        public static event Action<string> GiveWarning;
+        public static event Action<float> UpdatePowerText;
+        public static event Action<GameObject> UpdateSelectedGameObject;
+        public static event Action<List<GameObject>> UpdateProduciblesList;
         public static GameController Instance;
         public static AStarPathfinding AStarPathfinding;
         public static ObjectPooling ObjectPooling;
         public static GridSystem GridSystem;
         public static GuiController GuiController;
-        public TextMeshProUGUI powerAmountText;
-        public TextMeshProUGUI selectedGameObjectName;
-        public GameObject selectedGameObject;
-        public RawImage selectedGameObjectImage;
-        public float powerAmount;
+        public float PowerAmount;
+        public GameObject SelectedGameObject;
 
-        void Awake()
+        private void Awake()
         {
-            if (Instance == null) // We will only have one MainGame object in out scene. Thus, we just make it unique (Singleton)
+            if (Instance == null) // Singleton.
             {
                 Instance = this;
             }
         }
 
-        void Start()
+        private void Start()
         {
-            AStarPathfinding = GetComponent<AStarPathfinding>();
-            ObjectPooling = GetComponent<ObjectPooling>();
-            GridSystem = GetComponent<GridSystem>();
-            GuiController = GetComponent<GuiController>();
-            PowerPlant.ProducePower += OnPowerProduce;
+            /*Singleton assignments*/
+            AStarPathfinding = AStarPathfinding.Instance;
+            ObjectPooling = ObjectPooling.Instance;
+            GridSystem = GridSystem.Instance;
+            GuiController = GuiController.Instance;
+
+            /*Event subscriptions*/
+            PowerPlant.ProducePower += OnPowerProduce; // PowerPlant's ProducePower is an event send by the power plant buildings.
+            ObjectPooling.ReducePowerAmount += OnPowerAmountReduce; // PowerPlant's ProducePower is an event send by the power plant buildings.
+            
+            UpdatePowerText?.Invoke(PowerAmount);
         }
 
-        public void OnPowerProduce(float produceAmount)
+        /*
+        If a power plant produces power, subscribed method OnPowerProduce adds it to the power amount in
+        hand and publishes the PowerAmount for UpdatePowerText subscribers the power amount text.
+         */
+        public void OnPowerProduce(float pProduceAmount)
         {
-            powerAmount += produceAmount;
-            UpdatePowerAmount();
+            PowerAmount += pProduceAmount;
+            UpdatePowerText?.Invoke(PowerAmount);
         }
 
-        public void UpdatePowerAmount()
+        /*
+        If the player uses resource, subscribed method OnPowerAmountReduce subtracts the used amount from the
+        power amount at hand and publishes the PowerAmount for UpdatePowerText subscribers the power amount text.
+         */
+        public void OnPowerAmountReduce(float pReduceAmount) // If a power plant produces power, add it to the power amount in hand and update the power amount text.
         {
-            powerAmountText.text = "Power Amount: " + powerAmount;
+            PowerAmount -= pReduceAmount;
+            UpdatePowerText?.Invoke(PowerAmount);
         }
 
+        /*
+         Since there is no destruction in the game, especially for GameController, this method is dummy and only
+         been put to complete "event" logic. It unsubscribes from the PowerPlant's ProducePower event.
+         */
         private void OnDestroy()
         {
             PowerPlant.ProducePower -= OnPowerProduce;
         }
 
-        public void AssignNewSelected(RaycastHit2D hitObject)
+        /*
+         If a game object is clicked, it is assigned to the GameController Instance's
+         SelectedGameObject after the previous selected game object is unassigned
+         from the variable.
+         */
+        public void AssignNewSelected(RaycastHit2D pHitObject)
         {
             EmptyTheSelected();
-            selectedGameObject = hitObject.collider.gameObject; // Add the hit playable object as selected game object.
-            selectedGameObject.GetComponent<Playable>().Selected(); // Since the selected object needs to be a playable object, there is no need to check the existance of component "Playable".
-            selectedGameObjectImage.texture = selectedGameObject.GetComponent<SpriteRenderer>().sprite.texture;
-            selectedGameObjectName.text = selectedGameObject.name;
+            Instance.SelectedGameObject = pHitObject.collider.gameObject; // Add the hit playable object as selected game object.
+            Instance.SelectedGameObject.GetComponent<Playable>().Selected(); // Since the selected object needs to be a playable object, there is no need to check the existence of component "Playable".
+            UpdateSelectedGameObject?.Invoke(Instance.SelectedGameObject);
         }
 
+        /*
+         Removes the object assignment from the selected game object.
+         */
         public void EmptyTheSelected()
         {
-            selectedGameObject = null;
-            selectedGameObjectImage.texture = null;
-            selectedGameObjectName.text = null;
-            UnitsMenuContent.UnitsMenuContentInstance.DisplayProducibles();
+            Instance.SelectedGameObject = null;
+            UpdateProduciblesList?.Invoke(null);// When the SelectedGameObject changes, the producibles menu on the right hand side of the GUI changes ass well based on what the new selected game object can produce. 
+            UpdateSelectedGameObject?.Invoke(null);
         }
 
     }

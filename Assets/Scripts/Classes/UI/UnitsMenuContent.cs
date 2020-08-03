@@ -1,23 +1,32 @@
 ﻿using System.Collections.Generic;
+using Assets.Scripts.Classes.Gameplay;
+using Assets.Scripts.Classes.Playables;
 using Assets.Scripts.Interfaces;
+using JetBrains.Annotations;
 using UnityEngine;
 
-namespace Assets.Scripts.Classes
+namespace Assets.Scripts.Classes.UI
 {
     public class UnitsMenuContent : MonoBehaviour, IUnitsMenuContent
     {
         public static UnitsMenuContent UnitsMenuContentInstance;
         public List<GameObject> UnitList;
 
-        void Awake()
+        private void Awake()
         {
-            if (UnitsMenuContentInstance == null) // We will only have one UnitsMenu in our UI. Thus, we just make it unique (Singleton)
+            if (UnitsMenuContentInstance == null) // Singleton
             {
                 UnitsMenuContentInstance = this;
             }
         }
 
-        public void DisplayProducibles(List<GameObject> produciblesList = null)
+        private void Start()
+        {
+            GameController.UpdateProduciblesList += DisplayProducibles;
+            Barrack.UpdateProductionButtons += DisplayProducibles;
+        }
+
+        public void DisplayProducibles([CanBeNull] List<GameObject> pProduciblesList)
         {
             UnitList.Clear(); // Clear the list for buttons.
 
@@ -26,9 +35,9 @@ namespace Assets.Scripts.Classes
                 Destroy(child.gameObject);
             }
 
-            if (produciblesList != null)
+            if (pProduciblesList != null)
             {
-                foreach (var unitToAdd in produciblesList) // Add the newly selected game object's buttons to the menu's list.
+                foreach (var unitToAdd in pProduciblesList) // Add the newly selected game object's buttons to the menu's list.
                 {
                     UnitList.Add(unitToAdd);
                 }
@@ -44,7 +53,6 @@ namespace Assets.Scripts.Classes
                 Instantiate(unit, transform);
             }
         }
-
 
     }
 }

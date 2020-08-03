@@ -1,11 +1,11 @@
 ﻿using System;
 using Assets.Scripts.Classes.Gameplay;
+using Assets.Scripts.Constants;
 using Assets.Scripts.Interfaces;
 using UnityEngine;
 
 namespace Assets.Scripts.Classes
 {
-    //TODO: Binaların oturacağı zemini kontrol et, grid olmayan yere koyulamasın.
     public class BuildingTemplate : MonoBehaviour, IBuildingTemplate, IInteractable
     {
         public static event Action<string> GiveWarning;
@@ -24,7 +24,7 @@ namespace Assets.Scripts.Classes
             _yPosToAdd = ((GetComponent<BoxCollider2D>().size.y + 1) % 2) * GameController.GridSystem.NodeRadius; // If a side length (width or height) is even, then it will fall into the middle of the selected node and radius of the node must be added to alignment. Such case is not binding for odd lengths. They will already fall onto the node edge.
         }
 
-        void FixedUpdate()
+        private void FixedUpdate()
         {
             if (Cursor.CursorInstance.TileTheCursorIsOn != null)
             {
@@ -39,8 +39,8 @@ namespace Assets.Scripts.Classes
                 for (int j = 0; j < TemplateSize.y; j++)
                 {
                     var node = GameController.GridSystem.NodeFromWorldPosition(
-                        objBottomLeftPoint + new Vector2(i * GameController.GridSystem._nodeDiameter,
-                            j * GameController.GridSystem._nodeDiameter));
+                        objBottomLeftPoint + new Vector2(i * GameController.GridSystem.NodeDiameter,
+                            j * GameController.GridSystem.NodeDiameter));
 
                     if (node != null && !node.IsObstructed)
                     {
@@ -66,32 +66,13 @@ namespace Assets.Scripts.Classes
         {
             if (_canPlaceBuilding)
             {
-                if (_objectToPlace.GetComponent<Playable>().BuildingCost <= GameController.Instance.powerAmount)
-                {
-                    GameController.ObjectPooling.SpawnFromPool(_objectToPlace, transform.position, Quaternion.identity, gameObject);
-                }
-                else
-                {
-                    GiveWarning?.Invoke("Insufficient power!");
-                }
+                GameController.ObjectPooling.SpawnFromPool(_objectToPlace, transform.position, Quaternion.identity, gameObject);
             }
             else
             {
-                GiveWarning?.Invoke("Cannot place here!");
+                GiveWarning?.Invoke(InGameDictionary.InappropriateBuildingPlacementWarning);
             }
         }
-
-        //void OnTriggerEnter2D(Collider2D col)
-        //{
-        //    this.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
-        //    _canPlaceBuilding = false;
-        //}
-
-        //void OnTriggerExit2D(Collider2D other)
-        //{
-        //    this.gameObject.GetComponent<SpriteRenderer>().color = Color.green;
-        //    _canPlaceBuilding = true;
-        //}
 
         public void LeftMouseClick()
         {

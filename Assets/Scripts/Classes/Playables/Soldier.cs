@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.Classes.GamePlay;
+using Assets.Scripts.Classes.Playables;
 using Assets.Scripts.Interfaces;
 using UnityEngine;
 
@@ -12,8 +13,8 @@ namespace Assets.Scripts.Classes
         void Awake()
         {
             AudioSource = GetComponent<AudioSource>();
-            AudioSource.clip = BuildSound;
-            AudioSource.PlayOneShot(BuildSound);
+            AudioSource.clip = CreatedSound;
+            AudioSource.PlayOneShot(CreatedSound);
             name = "Soldier";
         }
     }

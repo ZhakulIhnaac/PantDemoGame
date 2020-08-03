@@ -8,9 +8,9 @@ namespace Assets.Scripts.Classes
     {
         public static event Action<string> GiveWarning;
         public int HealthPoint;
-        public AudioClip BuildSound;
+        public AudioClip CreatedSound;
         protected AudioSource AudioSource;
-        public float BuildingCost;
+        public float PowerCost;
         public Vector2 PlayableSize => (Vector2)gameObject.GetComponent<SpriteRenderer>().bounds.size;
 
         public virtual void Selected()

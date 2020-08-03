@@ -58,18 +58,18 @@ namespace Assets.Scripts.Classes
 
             if (oneButtonFromTop.transform.position.y > UpperTresholdYValue) // Carry the top buttons to bottom
             {
-                var ButtonsToCarry = AllButtonsList.Where(x => x.transform.position.y > UpperTresholdYValue);
+                var buttonsToCarry = AllButtonsList.Where(x => x.transform.position.y > UpperTresholdYValue);
 
-                foreach (var button in ButtonsToCarry)
+                foreach (var button in buttonsToCarry)
                 {
                     button.transform.position = new Vector3(button.transform.position.x, oneButtonFromBottom.transform.position.y - ButtonHeight - VerticalGap, button.transform.position.z);
                 }
             }
             else if (oneButtonFromBottom.transform.position.y < LowerTresholdYValue) // Carry the bottom buttons to top
             {
-                var ButtonsToCarry = AllButtonsList.Where(x => x.transform.position.y < LowerTresholdYValue);
+                var buttonsToCarry = AllButtonsList.Where(x => x.transform.position.y < LowerTresholdYValue);
 
-                foreach (var button in ButtonsToCarry)
+                foreach (var button in buttonsToCarry)
                 {
                     button.transform.position = new Vector3(button.transform.position.x, oneButtonFromTop.transform.position.y + ButtonHeight + VerticalGap, button.transform.position.z);
                 }
@@ -78,83 +78,3 @@ namespace Assets.Scripts.Classes
         }
     }
 }
-
-
-
-
-/*OLD VERSION
-using System.Collections.Generic;
-using System.Globalization;
-using Assets.Scripts.Interfaces;
-using UnityEngine;
-using UnityEngine.PlayerLoop;
-using UnityEngine.UI;
-
-namespace Assets.Scripts.Classes
-{
-    public class BuildingSvContent : MonoBehaviour, IBuildingSvContent
-    {
-        public List<GameObject> produciblesList;
-        private int numberOfColumns;
-        private ScrollRect scrollRect;
-
-        void Start()
-        {
-            scrollRect = gameObject.transform.parent.parent.GetComponent<ScrollRect>();
-            numberOfColumns = Mathf.FloorToInt((transform.parent.gameObject.GetComponent<RectTransform>().rect.width - gameObject.GetComponent<GridLayoutGroup>().spacing.x) / gameObject.GetComponent<GridLayoutGroup>().cellSize.x);
-            Populate();
-        }
-
-        public void Populate()
-        {
-            var frameHeight = transform.parent.gameObject.GetComponent<RectTransform>().rect.height;
-            var number = Mathf.Ceil(frameHeight / gameObject.GetComponent<GridLayoutGroup>().cellSize.y) + 1;
-            for (int i = 0; i < number; i++)
-            {
-                foreach (var producible in produciblesList)
-                {
-                    Instantiate(producible, transform);
-                }
-            }
-        }
-
-        public void Update()
-        {
-            if (scrollRect.verticalNormalizedPosition >= 0.95f)
-            {
-                Debug.Log("Up");
-
-                for (int i = 0; i < numberOfColumns; i++)
-                {
-                    Debug.Log(produciblesList[0].GetComponent<RectTransform>());
-                    //produciblesList[produciblesList.Count - 1 - i].GetComponent<RectTransform>().rect.position = produciblesList[0].GetComponent<RectTransform>().rect.position;
-                }
-
-                //foreach (Transform child in transform)
-                //{
-                //    Destroy(child.gameObject);
-                //}
-
-                //Populate();
-            }
-
-            else if (scrollRect.verticalNormalizedPosition <= 0.05f)
-            {
-                Debug.Log("Down");
-                //for (int i = 0; i < numberOfColumns; i++)
-                //{
-                //    produciblesList.Insert(0, produciblesList[produciblesList.Count - 1]);
-                //    produciblesList.RemoveAt(produciblesList.Count - 1);
-                //}
-
-                //foreach (Transform child in transform)
-                //{
-                //    Destroy(child.gameObject);
-                //}
-
-                //Populate();
-            }
-        }
-    }
-}
-*/

@@ -1,88 +1,134 @@
-﻿using System.Collections.Generic;
-using Assets.Scripts.Classes.Gameplay;
+﻿using System;
+using System.Collections.Generic;
+using Assets.Scripts.Constants;
 using Assets.Scripts.Interfaces;
 using UnityEngine;
 
-namespace Assets.Scripts.Classes
+namespace Assets.Scripts.Classes.Gameplay
 {
     public class ObjectPooling : MonoBehaviour, IObjectPooling
     {
-        public static ObjectPooling Instance;
-
+        /*
+         ObjectPool class is only related to and being used in the ObjectPooling class.
+         It acts as a pool for game objects to be stored.
+         */
         [System.Serializable]
-        public class ObjectPool // Pool to store the game objects.
+        public class ObjectPool
         {
-            public string objTag;
-            public GameObject objToStore;
-            public int poolSize;
+            public string ObjTag;
+            public GameObject ObjToStore;
+            public int PoolSize;
         }
 
-        public List<ObjectPool> poolList; // Used to feed Pool objects from Unity interface.
-        public Dictionary<string, Queue<GameObject>> poolDictionary; // Each pool of objects will be stored inside a dictionary.
+        public static event Action<string> GiveWarning; // Event for giving warning to GUI controller.
+        public static event Action<float> ReducePowerAmount; // Event for reducing power amount when producing a new playable.
+        public static ObjectPooling Instance; // Singleton
+        public List<ObjectPool> PoolList; // Used to feed Pool objects from Unity interface.
+        public Dictionary<string, Queue<GameObject>> PoolDictionary; // Each pool of objects will be stored inside a dictionary.
 
-        void Awake()
+        private void Awake()
         {
-            if (Instance == null) // We will only have one ObjectPooling (Attached to MainGame Singleton) object in out scene. Thus, we just make it unique (Singleton)
+            if (Instance == null) // Making the singleton.
             {
                 Instance = this;
             }
         }
 
-        void Start()
+        private void Start()
         {
             CreatePool();
         }
 
+
+        /*
+        Initial action of the object pool instance. It creates the
+        pools for the given units in "PoolList" list variable.
+         */
         public void CreatePool()
         {
-            poolDictionary = new Dictionary<string, Queue<GameObject>>();
-            foreach (var pool in poolList)
+            PoolDictionary = new Dictionary<string, Queue<GameObject>>();
+            foreach (var pool in PoolList)
             {
-                Queue<GameObject> gameObjPool = new Queue<GameObject>();
+                var gameObjPool = new Queue<GameObject>();
 
-                for (int index = 0; index < pool.poolSize; index++)
+                for (var index = 0; index < pool.PoolSize; index++)
                 {
-                    GameObject poolObj = Instantiate(pool.objToStore, transform.position, Quaternion.identity);
+                    var poolObj = Instantiate(pool.ObjToStore, transform.position, Quaternion.identity);
                     poolObj.SetActive(false);
                     gameObjPool.Enqueue(poolObj);
                 }
 
-                poolDictionary.Add(pool.objTag, gameObjPool);
+                PoolDictionary.Add(pool.ObjTag, gameObjPool);
             }
         }
 
+        /*
+         Any playable game object created by the player is being spawned
+         from the pool initially defined by the CreatePool method. SpawnFromPool
+         method does the spawning after checking the available resources and required
+         resources by the game object to be spawned.
+         */
         public void SpawnFromPool(GameObject gameObjectToSpawn, Vector2 spawnPosition, Quaternion spawnRotation, GameObject template = null)
         {
-            // Spawn
-            GameObject objectToSpawn = poolDictionary[gameObjectToSpawn.tag].Dequeue();
-
-            objectToSpawn.SetActive(true);
-            objectToSpawn.transform.position = spawnPosition;
-            objectToSpawn.transform.rotation = spawnRotation;
-
-            poolDictionary[gameObjectToSpawn.tag].Enqueue(objectToSpawn);
-
-            GameController.Instance.powerAmount -= gameObjectToSpawn.GetComponent<Playable>().BuildingCost;
-            GameController.Instance.UpdatePowerAmount();
-
-            if (template != null)
+            if (gameObjectToSpawn.GetComponent<Playable>().PowerCost > GameController.Instance.PowerAmount) // Checking if the amount of power in hand can meet the required power amount.
             {
-                Destroy(template);
+                GiveWarning?.Invoke(InGameDictionary.InsufficientPowerWarning);
             }
-
-            // Obstruct the nodes
-            Vector2 objBottomLeftPoint = (Vector2)spawnPosition + Vector2.left * objectToSpawn.GetComponent<Playable>().PlayableSize.x / 2 + Vector2.down * objectToSpawn.GetComponent<Playable>().PlayableSize.y / 2; // transform.position will give the middle point and we will subtract the halves of the height and width to find bottom left point
-            for (int i = 0; i < gameObjectToSpawn.GetComponent<Playable>().PlayableSize.x; i++)
+            else // There is enough resource for the game object to be spawned.
             {
-                for (int j = 0; j < gameObjectToSpawn.GetComponent<Playable>().PlayableSize.y; j++)
+                // Spawn
+                var objectToSpawn = PoolDictionary[gameObjectToSpawn.tag].Dequeue();
+
+                objectToSpawn.SetActive(true);
+                objectToSpawn.transform.position = spawnPosition;
+                objectToSpawn.transform.rotation = spawnRotation;
+
+                PoolDictionary[gameObjectToSpawn.tag].Enqueue(objectToSpawn);
+
+                ReducePowerAmount?.Invoke(gameObjectToSpawn.GetComponent<Playable>().PowerCost);
+
+                if (template != null)
                 {
-                    var node = GameController.GridSystem.NodeFromWorldPosition(
-                        objBottomLeftPoint + new Vector2(i * GameController.GridSystem._nodeDiameter,
-                            j * GameController.GridSystem._nodeDiameter));
-                    
+                    Destroy(template);
+                }
+
+                // Obstruct the nodes
+                NodeObstructionChange(spawnPosition, objectToSpawn, gameObjectToSpawn);
+                //var objBottomLeftPoint = (Vector2)spawnPosition + Vector2.left * objectToSpawn.GetComponent<Playable>().PlayableSize.x / 2 + Vector2.down * objectToSpawn.GetComponent<Playable>().PlayableSize.y / 2 + new Vector2(GameController.GridSystem.NodeRadius, GameController.GridSystem.NodeRadius); // transform.position will give the middle point and we will subtract the halves of the height and width to find bottom left point
+                //for (var i = 0; i < gameObjectToSpawn.GetComponent<Playable>().PlayableSize.x; i++) // For each grid square in width...
+                //{
+                //    for (var j = 0; j < gameObjectToSpawn.GetComponent<Playable>().PlayableSize.y; j++) // For each grid square in height...
+                //    {
+                //        var node = GameController.GridSystem.NodeFromWorldPosition(objBottomLeftPoint + new Vector2(i * GameController.GridSystem.NodeDiameter, j * GameController.GridSystem.NodeDiameter));
+
+                //        if (node != null)
+                //        {
+                //            node.IsObstructed = true;
+                //        }
+                //    }
+                //}
+            }
+        }
+
+        /*
+         NodeObstructionChange method changes the "availability" of the nodes below the
+         game object to be spawned or to be taken from the pool to be the new spawned.
+         When a game object spawned onto a node or node group, or when it is taken from
+         the game area because of being the next in pool, the nodes below the game object
+         changes their status for being obstructed.
+         */
+        private void NodeObstructionChange(Vector2 pSpawnPosition, GameObject pObjectToSpawn, GameObject pGameObjectToSpawn)
+        {
+            var objToSpawnBottomLeftPoint = (Vector2)pSpawnPosition + Vector2.left * pObjectToSpawn.GetComponent<Playable>().PlayableSize.x / 2 + Vector2.down * pObjectToSpawn.GetComponent<Playable>().PlayableSize.y / 2 + new Vector2(GameController.GridSystem.NodeRadius, GameController.GridSystem.NodeRadius); // transform.position will give the middle point and we will subtract the halves of the height and width to find bottom left point
+            for (var i = 0; i < pGameObjectToSpawn.GetComponent<Playable>().PlayableSize.x; i++) // For each grid square in width...
+            {
+                for (var j = 0; j < pGameObjectToSpawn.GetComponent<Playable>().PlayableSize.y; j++) // For each grid square in height...
+                {
+                    var node = GameController.GridSystem.NodeFromWorldPosition(objToSpawnBottomLeftPoint + new Vector2(i * GameController.GridSystem.NodeDiameter, j * GameController.GridSystem.NodeDiameter));
+
                     if (node != null)
                     {
-                        node.IsObstructed = true;
+                        node.IsObstructed = !node.IsObstructed;
                     }
                 }
             }

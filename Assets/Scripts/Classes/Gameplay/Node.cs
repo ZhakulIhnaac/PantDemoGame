@@ -1,21 +1,24 @@
 ﻿using UnityEngine;
 
-public class Node
+namespace Assets.Scripts.Classes.Gameplay
 {
-    public int XPosInGrid; // X position in the node array
-    public int YPosInGrid; // Y position in the node array
-    public bool IsObstructed; // Is the node obstructed
-    public Vector2 WorldPosition; // World position of the node
-    public Node ParentNode; // Previous node to trace the shortest path
-    public int GCost; // Cost of moving to this node
-    public int HCost; // Manhattan distance to the goal
-    public int FCost => GCost + HCost; // fCost calculation
-
-    public Node(bool pIsObstructed, Vector3 pWorldPosition, int pXPosInGrid, int pYPosInGrid) // Constructor
+    public class Node
     {
-        IsObstructed = pIsObstructed;
-        WorldPosition = pWorldPosition;
-        XPosInGrid = pXPosInGrid;
-        YPosInGrid = pYPosInGrid;
+        public int XPosInGrid; // X position in the node matrix.
+        public int YPosInGrid; // Y position in the node matrix.
+        public bool IsObstructed; // Is the node obstructed.
+        public Vector2 WorldPosition; // World position of the node.
+        public Node ParentNode; // Parent node, required for tracing back the shortest path.
+        public int GCost; // Cost of moving to this node from the starting node.
+        public int HCost; // Manhattan distance to the target node.
+        public int FCost => GCost + HCost; // Total cost of the node.
+
+        public Node(bool pIsObstructed, Vector3 pWorldPosition, int pXPosInGrid, int pYPosInGrid)
+        {
+            IsObstructed = pIsObstructed;
+            WorldPosition = pWorldPosition;
+            XPosInGrid = pXPosInGrid;
+            YPosInGrid = pYPosInGrid;
+        }
     }
 }

@@ -241,5 +241,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HealthPoint: 300
-  BuildSound: {fileID: 8300000, guid: 23565158ff9db7d46b48dadb681f05d7, type: 3}
-  BuildingCost: 700
+  CreatedSound: {fileID: 8300000, guid: 23565158ff9db7d46b48dadb681f05d7, type: 3}
+  PowerCost: 1000

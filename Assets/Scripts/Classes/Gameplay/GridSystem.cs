@@ -13,11 +13,11 @@ namespace Assets.Scripts.Classes.Gameplay
         public Vector2 GridWorldSize; // World size of the grid object
         public float NodeRadius; // Mostly, the _nodeDiameter will be used, but radius will be useful while building the grid
         private Node[,] _grid; // The grid we will store the nodes inside
-        public float _nodeDiameter;
+        public float NodeDiameter;
         private int _gridSizeX;
         private int _gridSizeY;
 
-        void Awake()
+        private void Awake()
         {
             if (Instance == null) // We will only have one MainGame object in out scene. Thus, we just make the grid unique (Singleton)
             {
@@ -25,11 +25,11 @@ namespace Assets.Scripts.Classes.Gameplay
             }
         }
 
-        void Start()
+        private void Start()
         {
-            _nodeDiameter = 2 * NodeRadius;
-            _gridSizeX = Mathf.RoundToInt(GridWorldSize.x / _nodeDiameter); // Find number of nodes on horizontal axis of the grid
-            _gridSizeY = Mathf.RoundToInt(GridWorldSize.y / _nodeDiameter); // Find number of nodes on vertical axis of the grid
+            NodeDiameter = 2 * NodeRadius;
+            _gridSizeX = Mathf.RoundToInt(GridWorldSize.x / NodeDiameter); // Find number of nodes on horizontal axis of the grid
+            _gridSizeY = Mathf.RoundToInt(GridWorldSize.y / NodeDiameter); // Find number of nodes on vertical axis of the grid
             CreateGrid();
         }
 
@@ -41,7 +41,7 @@ namespace Assets.Scripts.Classes.Gameplay
             {
                 for (int j = 0; j < _gridSizeY; j++) // Grid row count
                 {
-                    Vector2 worldPoint = bottomLeftPoint + Vector2.right * (i * _nodeDiameter + NodeRadius) + Vector2.up * (j * _nodeDiameter + NodeRadius);
+                    Vector2 worldPoint = bottomLeftPoint + Vector2.right * (i * NodeDiameter + NodeRadius) + Vector2.up * (j * NodeDiameter + NodeRadius);
                     bool obstacle = Physics2D.OverlapCircle(worldPoint, NodeRadius, PlayableLayer); // Checking for obstacle on node
                     Instantiate(GridGround, worldPoint, Quaternion.identity); // Instantiate the ground sprite at the same position as the node.
                     _grid[i, j] = new Node(obstacle, worldPoint, i, j);
@@ -53,8 +53,8 @@ namespace Assets.Scripts.Classes.Gameplay
         {
             Vector2 bottomLeftPoint = (Vector2)GridReferenceGround.transform.position - Vector2.right * GridWorldSize.x / 2 - Vector2.up * GridWorldSize.y / 2; // Find the position of the bottom left point to use it as a reference point.
             var directionVector = pWorldPosition - bottomLeftPoint; // Point out the location of the given world position relative to the bottom left point.
-            var xCoordinate = Mathf.FloorToInt(directionVector.x / _nodeDiameter);
-            var yCoordinate = Mathf.FloorToInt(directionVector.y / _nodeDiameter);
+            var xCoordinate = Mathf.FloorToInt(directionVector.x / NodeDiameter);
+            var yCoordinate = Mathf.FloorToInt(directionVector.y / NodeDiameter);
 
             if (xCoordinate >= 0 && xCoordinate < _gridSizeX)
             {

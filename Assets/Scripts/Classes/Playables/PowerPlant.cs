@@ -15,8 +15,8 @@ namespace Assets.Scripts.Classes
         void Awake()
         {
             AudioSource = gameObject.GetComponent<AudioSource>();
-            AudioSource.clip = BuildSound;
-            AudioSource.PlayOneShot(BuildSound);
+            AudioSource.clip = CreatedSound;
+            AudioSource.PlayOneShot(CreatedSound);
             HealthPoint = 150;
         }
 

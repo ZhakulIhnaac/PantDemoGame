@@ -1,4 +1,5 @@
 ﻿using System.Xml;
+using Assets.Scripts.Classes.Gameplay;
 using Assets.Scripts.Interfaces;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -22,17 +23,17 @@ namespace Assets.Scripts.Classes
             }
         }
 
-        void Start()
+        private void Start()
         {
             EventSystem = EventSystem.current;
         }
 
-        void Update()
+        private void Update()
         {
             if (BuildingTemplate != null)
             {
-                Ray groundTileCheckMouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit2D groundTileCheck = Physics2D.Raycast(groundTileCheckMouseRay.origin, groundTileCheckMouseRay.direction, Mathf.Infinity, _groundLayerMask);
+                var groundTileCheckMouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+                var groundTileCheck = Physics2D.Raycast(groundTileCheckMouseRay.origin, groundTileCheckMouseRay.direction, Mathf.Infinity, _groundLayerMask);
                 if (groundTileCheck.collider != null)
                 {
                     TileTheCursorIsOn = groundTileCheck.collider.gameObject;
@@ -55,17 +56,17 @@ namespace Assets.Scripts.Classes
 
                     else
                     {
-                        Ray mouseRayToSend = Camera.main.ScreenPointToRay(Input.mousePosition);
-                        RaycastHit2D checkPlayableObjectHit = Physics2D.Raycast(mouseRayToSend.origin, mouseRayToSend.direction, Mathf.Infinity, _playableLayerMask);
+                        var mouseRayToSend = Camera.main.ScreenPointToRay(Input.mousePosition);
+                        var checkPlayableObjectHit = Physics2D.Raycast(mouseRayToSend.origin, mouseRayToSend.direction, Mathf.Infinity, _playableLayerMask);
 
                         if (checkPlayableObjectHit.collider != null) // If the ray hit anything on playableLayer...
                         {
                             GameController.Instance.AssignNewSelected(checkPlayableObjectHit); // Assign the hit object to selected object in main game.
                         }
 
-                        else if (GameController.Instance.selectedGameObject != null) // If there is a selected object in hand...
+                        else if (GameController.Instance.SelectedGameObject != null) // If there is a selected object in hand...
                         {
-                            GameController.Instance.selectedGameObject.GetComponent<Playable>().LeftMouseClick(); // Use left click method inside the selected game object. Selected game objects are taken from PlayableLayer, thus they will all inherit from IInteractable and will contain leftMouseClick.
+                            GameController.Instance.SelectedGameObject.GetComponent<Playable>().LeftMouseClick(); // Use left click method inside the selected game object. Selected game objects are taken from PlayableLayer, thus they will all inherit from IInteractable and will contain leftMouseClick.
                         }
 
                     }
@@ -79,11 +80,11 @@ namespace Assets.Scripts.Classes
                         Destroy(BuildingTemplate); // Remove building template from selection.
                     }
 
-                    else if (GameController.Instance.selectedGameObject != null)
+                    else if (GameController.Instance.SelectedGameObject != null)
                     {
-                        if (GameController.Instance.selectedGameObject.GetComponent<Playable>() != null) // If a unit is selected...
+                        if (GameController.Instance.SelectedGameObject.GetComponent<Playable>() != null) // If a unit is selected...
                         {
-                            GameController.Instance.selectedGameObject.GetComponent<Playable>().RightMouseClick(); // Use right click method inside the selected game object. Selected game objects are taken from PlayableLayer, thus they will all inherit from IInteractable and will contain leftMouseClick.
+                            GameController.Instance.SelectedGameObject.GetComponent<Playable>().RightMouseClick(); // Use right click method inside the selected game object. Selected game objects are taken from PlayableLayer, thus they will all inherit from IInteractable and will contain leftMouseClick.
                         }
                     }
                 }
