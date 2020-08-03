@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Assets.Scripts.Classes.Playables;
 using Assets.Scripts.Constants;
 using Assets.Scripts.Interfaces;
 using UnityEngine;
@@ -20,8 +21,10 @@ namespace Assets.Scripts.Classes.Gameplay
             public int PoolSize;
         }
 
+        /* Events */
         public static event Action<string> GiveWarning; // Event for giving warning to GUI controller.
         public static event Action<float> ReducePowerAmount; // Event for reducing power amount when producing a new playable.
+
         public static ObjectPooling Instance; // Singleton
         public List<ObjectPool> PoolList; // Used to feed Pool objects from Unity interface.
         public Dictionary<string, Queue<GameObject>> PoolDictionary; // Each pool of objects will be stored inside a dictionary.

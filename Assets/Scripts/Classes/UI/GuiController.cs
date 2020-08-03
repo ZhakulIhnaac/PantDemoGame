@@ -11,6 +11,9 @@ namespace Assets.Scripts.Classes.UI
 
     public class GuiController : MonoBehaviour
     {
+        /*
+         GuiController is the controller of objects in user interface.
+         */
         public static GuiController Instance;
         public TextMeshProUGUI WarningText;
         public TextMeshProUGUI PowerAmountText;
@@ -18,7 +21,7 @@ namespace Assets.Scripts.Classes.UI
         public RawImage SelectedGameObjectImage;
         public GameObject MessagePanel;
 
-        void Awake()
+        private void Awake()
         {
             if (Instance == null) // We will only have one MainGame object in out scene. Thus, we just make it unique (Singleton)
             {
@@ -37,11 +40,18 @@ namespace Assets.Scripts.Classes.UI
             ObjectPooling.GiveWarning += GiveWarning;
         }
 
+        /*
+         UpdatePowerText updates the text showing the total power amount.
+         */
         public void UpdatePowerText(float pPowerAmount) // Update the power amount text in GUI.
         {
+            Debug.Log("DEs");
             PowerAmountText.text = "Power Amount: " + pPowerAmount;
         }
 
+        /*
+         UpdateSelectedGameObjectGui displays the selected game object's picture and name.
+         */
         public void UpdateSelectedGameObjectGui([CanBeNull] GameObject pSelectedGameObject) // Update the power amount text in GUI.
         {
             if (pSelectedGameObject != null)
@@ -56,11 +66,17 @@ namespace Assets.Scripts.Classes.UI
             }
         }
 
+        /*
+         GiveWarning starts the GiveWarningMessage coroutine.
+         */
         private void GiveWarning(string pMessage)
         {
             StartCoroutine(GiveWarningMessage(pMessage));
         }
 
+        /*
+         GiveWarningMessage displays the warning message on screen for t seconds.
+         */
         public IEnumerator GiveWarningMessage(string pMessage)
         {
             MessagePanel.SetActive(true);
@@ -70,5 +86,6 @@ namespace Assets.Scripts.Classes.UI
             WarningText.enabled = false;
             MessagePanel.SetActive(false);
         }
+
     }
 }

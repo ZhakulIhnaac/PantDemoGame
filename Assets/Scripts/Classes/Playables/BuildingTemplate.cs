@@ -3,12 +3,15 @@ using Assets.Scripts.Classes.Gameplay;
 using Assets.Scripts.Constants;
 using Assets.Scripts.Interfaces;
 using UnityEngine;
+using Cursor = Assets.Scripts.Classes.UI.Cursor;
 
-namespace Assets.Scripts.Classes
+namespace Assets.Scripts.Classes.Playables
 {
     public class BuildingTemplate : MonoBehaviour, IBuildingTemplate, IInteractable
     {
+        /* Events */
         public static event Action<string> GiveWarning;
+
         [SerializeField] private GameObject _objectToPlace;
         private int _numberOfNodesUnderTheTemplate;
         private bool _canPlaceBuilding;
@@ -16,7 +19,7 @@ namespace Assets.Scripts.Classes
         private float _yPosToAdd;
         public Vector2 TemplateSize => (Vector2)gameObject.GetComponent<SpriteRenderer>().bounds.size;
 
-        void Start()
+        private void Start()
         {
             _canPlaceBuilding = true;
             gameObject.AddComponent<AudioSource>();
@@ -32,11 +35,11 @@ namespace Assets.Scripts.Classes
             }
 
             // Check for ground availability
-            Vector2 objBottomLeftPoint = (Vector2)transform.position + Vector2.left * TemplateSize.x / 2 + Vector2.down * TemplateSize.y / 2; // transform.position will give the middle point and we will subtract the halves of the height and width to find bottom left point
+            var objBottomLeftPoint = (Vector2)transform.position + Vector2.left * TemplateSize.x / 2 + Vector2.down * TemplateSize.y / 2; // transform.position will give the middle point and we will subtract the halves of the height and width to find bottom left point
             _numberOfNodesUnderTheTemplate = 0;
-            for (int i = 0; i < TemplateSize.x; i++)
+            for (var i = 0; i < TemplateSize.x; i++)
             {
-                for (int j = 0; j < TemplateSize.y; j++)
+                for (var j = 0; j < TemplateSize.y; j++)
                 {
                     var node = GameController.GridSystem.NodeFromWorldPosition(
                         objBottomLeftPoint + new Vector2(i * GameController.GridSystem.NodeDiameter,
@@ -62,6 +65,9 @@ namespace Assets.Scripts.Classes
 
         }
 
+        /*
+         PlaceBuilding spawns the assigned building to the defined position if the ground is appropriate.
+         */
         public void PlaceBuilding()
         {
             if (_canPlaceBuilding)
@@ -74,11 +80,17 @@ namespace Assets.Scripts.Classes
             }
         }
 
+        /*
+         LeftMouseClick is triggered when left mouse button is clicked while the template is selected.
+         */
         public void LeftMouseClick()
         {
             PlaceBuilding();
         }
 
+        /*
+         RightMouseClick is triggered when right mouse button is clicked while the template is selected.
+         */
         public void RightMouseClick()
         {
             Destroy(gameObject);

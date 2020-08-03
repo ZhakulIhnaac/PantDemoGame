@@ -2,7 +2,7 @@
 {
     public interface IBuildingProductionButton
     {
-        void assignBuildingTemplate();
+        void AssignBuildingTemplate();
     }
 }
 

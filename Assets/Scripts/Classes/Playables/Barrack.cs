@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using Assets.Scripts.Classes.Gameplay;
-using Assets.Scripts.Classes.UI;
+﻿using Assets.Scripts.Classes.Gameplay;
 using Assets.Scripts.Constants;
 using Assets.Scripts.Interfaces;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Classes.Playables
 {
     public class Barrack : Building, IBarrack
     {
+        /* Events */
         public static event Action<List<GameObject>> UpdateProductionButtons;
-        public List<GameObject> ProductionButtonList;
+
         [SerializeField] private LayerMask _playableLayerMask;
+        public List<GameObject> ProductionButtonList;
         private Vector2 _initialSpawnPosition;
 
         private void Awake()
@@ -28,7 +29,9 @@ namespace Assets.Scripts.Classes.Playables
             _initialSpawnPosition = (Vector2)transform.position + new Vector2((PlayableSize.x / 2) + GameController.GridSystem.NodeRadius, -((PlayableSize.y / 2) + GameController.GridSystem.NodeRadius));
         }
 
-
+        /*
+         
+         */
         public void Produce(GameObject unitToProduce)
         {
             
@@ -91,16 +94,25 @@ namespace Assets.Scripts.Classes.Playables
 
         }
 
+        /*
+         ShowProducibles method lists the production buttons in production menu.
+         */
         public void ShowProducibles()
         {
             UpdateProductionButtons?.Invoke(ProductionButtonList);
         }
 
+        /*
+         Selected method is triggered when the barrack is selected.
+         */
         public override void Selected()
         {
             ShowProducibles();
         }
 
+        /*
+         RotateVector rotates the given vector for given angle.
+         */
         public Vector2 RotateVector(Vector2 pVector, float angle)
         {
             var radian = angle * Mathf.Deg2Rad;

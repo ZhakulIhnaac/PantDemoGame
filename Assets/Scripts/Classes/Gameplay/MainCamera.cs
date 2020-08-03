@@ -1,42 +1,36 @@
 ﻿using UnityEngine;
 
-namespace Assets.Scripts.Classes
+namespace Assets.Scripts.Classes.Gameplay
 {
     public class MainCamera : MonoBehaviour
     {
-        private float cameraSpeed = 5f;
-        //private Vector2 initialPosition; // This will be used to 
-        public float mouseMoveBorder = 10f;
+        private const float CameraSpeed = 5f;
+        public float MouseMoveBorder = 10f;
 
-        void Start()
+        private void Update()
         {
-
-        }
-
-        void Update()
-        {
-            Vector3 pos = transform.position;
+            if (!Input.anyKey) return;
+            var pos = transform.position;
 
             // Movement control
-            if (Input.GetKey(KeyCode.UpArrow)/* || Input.mousePosition.y > Screen.height - mouseMoveBorder*/)
+            if (Input.GetKey(KeyCode.UpArrow))
             {
-                pos.y += cameraSpeed * Time.deltaTime;
+                pos.y += CameraSpeed * Time.deltaTime;
             }
-            if (Input.GetKey(KeyCode.RightArrow)/* || Input.mousePosition.x > Screen.width - mouseMoveBorder*/)
+            if (Input.GetKey(KeyCode.RightArrow))
             {
-                pos.x += cameraSpeed * Time.deltaTime;
+                pos.x += CameraSpeed * Time.deltaTime;
             }
-            if (Input.GetKey(KeyCode.DownArrow)/* || Input.mousePosition.y < mouseMoveBorder*/)
+            if (Input.GetKey(KeyCode.DownArrow))
             {
-                pos.y -= cameraSpeed * Time.deltaTime;
+                pos.y -= CameraSpeed * Time.deltaTime;
             }
-            if (Input.GetKey(KeyCode.LeftArrow)/* || Input.mousePosition.x < mouseMoveBorder*/)
+            if (Input.GetKey(KeyCode.LeftArrow))
             {
-                pos.x -= cameraSpeed * Time.deltaTime;
+                pos.x -= CameraSpeed * Time.deltaTime;
             }
 
             transform.position = pos;
         }
-
     }
 }

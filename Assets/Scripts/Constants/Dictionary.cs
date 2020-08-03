@@ -1,6 +1,6 @@
 ﻿namespace Assets.Scripts.Constants
 {
-    class InGameDictionary
+    internal static class InGameDictionary
     {
         public const string InsufficientPowerWarning = "Insufficient Power!";
         public const string InappropriateBuildingPlacementWarning = "You Cannot Place Here";

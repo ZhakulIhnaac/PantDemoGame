@@ -1,18 +1,19 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.Collections;
 using Assets.Scripts.Interfaces;
 using UnityEngine;
 
-namespace Assets.Scripts.Classes
+namespace Assets.Scripts.Classes.Playables
 {
     public class PowerPlant : Building, IPowerPlant
     {
-        private float _powerProductionInterval;
-        private float _powerAmountToSupply;
+        /* Events */
         public static event Action<float> ProducePower;
 
-        void Awake()
+        private float _powerProductionInterval;
+        private float _powerAmountToSupply;
+
+        private void Awake()
         {
             AudioSource = gameObject.GetComponent<AudioSource>();
             AudioSource.clip = CreatedSound;
@@ -20,7 +21,7 @@ namespace Assets.Scripts.Classes
             HealthPoint = 150;
         }
 
-        void Start()
+        private void Start()
         {
             _powerProductionInterval = 5f;
             _powerAmountToSupply = 20f;
@@ -28,9 +29,12 @@ namespace Assets.Scripts.Classes
             StartCoroutine(SupplyPower());
         }
 
-        public IEnumerator SupplyPower() // This coroutine will be producing an amount of power for the player in every t seconds.
+        /*
+         SupplyPower coroutine produces an amount of power for the player in every t seconds.
+         */
+        public IEnumerator SupplyPower()
         {
-            while (true) // Continue the production after 5 second.
+            while (true) // While loop ensures to continue the production after each t seconds.
             {
                 yield return new WaitForSeconds(_powerProductionInterval);
                 ProducePower?.Invoke(_powerAmountToSupply);

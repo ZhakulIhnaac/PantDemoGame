@@ -33,15 +33,20 @@ namespace Assets.Scripts.Classes.Gameplay
             CreateGrid();
         }
 
+        /*
+         Initial method for GridSystem object. CreateGrid creates a rectangular grid
+         by taking the GridGround property as a base. Number of nodes on the grid is
+         given by GridWorldSize, both for horizontal and vertical axises.
+         */
         public void CreateGrid()
         {
             _grid = new Node[_gridSizeX, _gridSizeY]; // Initializing the node array.
             Vector2 bottomLeftPoint = (Vector2)GridReferenceGround.transform.position - Vector2.right * GridWorldSize.x / 2 - Vector2.up * GridWorldSize.y / 2; // transform.position will give the middle point and we will subtract the halves of the height and width to find bottom left point
-            for (int i = 0; i < _gridSizeX; i++) // Grid column count
+            for (var i = 0; i < _gridSizeX; i++) // Grid column count
             {
-                for (int j = 0; j < _gridSizeY; j++) // Grid row count
+                for (var j = 0; j < _gridSizeY; j++) // Grid row count
                 {
-                    Vector2 worldPoint = bottomLeftPoint + Vector2.right * (i * NodeDiameter + NodeRadius) + Vector2.up * (j * NodeDiameter + NodeRadius);
+                    var worldPoint = bottomLeftPoint + Vector2.right * (i * NodeDiameter + NodeRadius) + Vector2.up * (j * NodeDiameter + NodeRadius);
                     bool obstacle = Physics2D.OverlapCircle(worldPoint, NodeRadius, PlayableLayer); // Checking for obstacle on node
                     Instantiate(GridGround, worldPoint, Quaternion.identity); // Instantiate the ground sprite at the same position as the node.
                     _grid[i, j] = new Node(obstacle, worldPoint, i, j);
@@ -49,6 +54,10 @@ namespace Assets.Scripts.Classes.Gameplay
             }
         }
 
+        /*
+         NodeFromWorldPosition takes a coordinate in terms of world position, then by taking the left-bottom corner
+         of the grid reference ground's world position, it finds out which node's area PWorldPosition falls in. 
+         */
         public Node NodeFromWorldPosition(Vector2 pWorldPosition)
         {
             Vector2 bottomLeftPoint = (Vector2)GridReferenceGround.transform.position - Vector2.right * GridWorldSize.x / 2 - Vector2.up * GridWorldSize.y / 2; // Find the position of the bottom left point to use it as a reference point.
@@ -67,10 +76,16 @@ namespace Assets.Scripts.Classes.Gameplay
             return null;
         }
 
+        /*
+         GetNeighbourNodes takes a node, pCurrentNode, and it checks 8 adjacent possible-node
+         positions including the ones in the corners for existence of nodes. If there is a node
+         in the checked position, it gets added into the neighbour nodes list. Lastly, this list
+         is returned to the method caller.
+         */
         public List<Node> GetNeighbourNodes(Node pCurrentNode)
         {
-            List<Node> NeighbouringNodes = new List<Node>();
-            List<Vector2> checkEightSides = new List<Vector2>
+            var neighbouringNodes = new List<Node>();
+            var checkEightSides = new List<Vector2>
             {
                 Vector2.up,
                 Vector2.up + Vector2.right,
@@ -87,19 +102,20 @@ namespace Assets.Scripts.Classes.Gameplay
                 var neighbourInquiry = CheckNeighbourNode(pCurrentNode, side);
                 if (neighbourInquiry != null)
                 {
-                    NeighbouringNodes.Add(neighbourInquiry);
+                    neighbouringNodes.Add(neighbourInquiry);
                 }
             }
 
-            return NeighbouringNodes;
+            return neighbouringNodes;
         }
 
-        Node CheckNeighbourNode(Node pCurrentNode, Vector2 position)
+        /*
+         CheckNeighbourNode checks if pPosition falls into a node's area and returns the node if it exists.
+         */
+        Node CheckNeighbourNode(Node pCurrentNode, Vector2 pPosition)
         {
-            List<Node> NeighbouringNodes = new List<Node>();
-
-            int checkPosX = pCurrentNode.XPosInGrid + (int)position.x;
-            int checkPosY = pCurrentNode.YPosInGrid + (int)position.y;
+            var checkPosX = pCurrentNode.XPosInGrid + (int)pPosition.x;
+            var checkPosY = pCurrentNode.YPosInGrid + (int)pPosition.y;
 
             if (checkPosX >= 0 && checkPosX < _gridSizeX)
             {
@@ -112,6 +128,9 @@ namespace Assets.Scripts.Classes.Gameplay
             return null;
         }
 
+        /*
+         ObstructNode changes the status of the given node in terms of being obstructed or not.
+         */
         void ObstructNode(Node node)
         {
             node.IsObstructed = true;

@@ -1,21 +1,21 @@
-﻿using System.Xml;
-using Assets.Scripts.Classes.Gameplay;
+﻿using Assets.Scripts.Classes.Gameplay;
+using Assets.Scripts.Classes.Playables;
 using Assets.Scripts.Interfaces;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Assets.Scripts.Classes
+namespace Assets.Scripts.Classes.UI
 {
     public class Cursor : MonoBehaviour, ICursor
     {
-        public EventSystem EventSystem;
         public static Cursor CursorInstance;
+        public EventSystem EventSystem;
         public GameObject BuildingTemplate; // The building template which will be assigned on clicking the GUI button for new building.
         public GameObject TileTheCursorIsOn; // Ground tile which will be used as a base on grid based system on movements and builds.
         [SerializeField] private LayerMask _playableLayerMask;
         [SerializeField] private LayerMask _groundLayerMask;
 
-        void Awake()
+        private void Awake()
         {
             if (CursorInstance == null) // We will only have one MainGame object in out scene. Thus, we just make it unique (Singleton).
             {

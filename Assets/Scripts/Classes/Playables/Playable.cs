@@ -2,7 +2,7 @@
 using Assets.Scripts.Interfaces;
 using UnityEngine;
 
-namespace Assets.Scripts.Classes
+namespace Assets.Scripts.Classes.Playables
 {
     public abstract class Playable : MonoBehaviour, IPlayable
     {
@@ -13,6 +13,11 @@ namespace Assets.Scripts.Classes
         public float PowerCost;
         public Vector2 PlayableSize => (Vector2)gameObject.GetComponent<SpriteRenderer>().bounds.size;
 
+        /*
+         Selected, LeftMouseClick and RightMouseClick methods will be overriden by its children,
+         Unit and Building classes. They are located in Playable class, because Selected,
+         LeftMouseClick and RightMouseClick will be called from Getcomponent<Playable>().
+         */
         public virtual void Selected()
         {
             // Will be overriden
@@ -28,6 +33,9 @@ namespace Assets.Scripts.Classes
             // Will be overriden
         }
 
+        /*
+         SendWarningMessage publishes the received message to the subscribers.
+         */
         public void SendWarningMessage(string message)
         {
             GiveWarning?.Invoke(message);

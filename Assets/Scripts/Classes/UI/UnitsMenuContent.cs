@@ -26,6 +26,9 @@ namespace Assets.Scripts.Classes.UI
             Barrack.UpdateProductionButtons += DisplayProducibles;
         }
 
+        /*
+         Recreate every producible unit's produce button fed by the selected game object.
+         */
         public void DisplayProducibles([CanBeNull] List<GameObject> pProduciblesList)
         {
             UnitList.Clear(); // Clear the list for buttons.
@@ -46,6 +49,9 @@ namespace Assets.Scripts.Classes.UI
             }
         }
 
+        /*
+         Place the unit producing button.
+         */
         public void Populate()
         {
             foreach (var unit in UnitList)

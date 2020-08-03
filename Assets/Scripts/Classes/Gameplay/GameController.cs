@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Assets.Scripts.Classes.GamePlay;
+using Assets.Scripts.Classes.Playables;
 using Assets.Scripts.Classes.UI;
 using Assets.Scripts.Interfaces;
 using TMPro;
@@ -37,12 +38,12 @@ namespace Assets.Scripts.Classes.Gameplay
             ObjectPooling = ObjectPooling.Instance;
             GridSystem = GridSystem.Instance;
             GuiController = GuiController.Instance;
+            OnPowerProduce(3f);
 
             /*Event subscriptions*/
             PowerPlant.ProducePower += OnPowerProduce; // PowerPlant's ProducePower is an event send by the power plant buildings.
             ObjectPooling.ReducePowerAmount += OnPowerAmountReduce; // PowerPlant's ProducePower is an event send by the power plant buildings.
             
-            UpdatePowerText?.Invoke(PowerAmount);
         }
 
         /*
