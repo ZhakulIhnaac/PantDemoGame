@@ -36,7 +36,10 @@ namespace Assets.Scripts.Classes.Playables
                     }
                     else // If the soldier has arrived the node...
                     {
-                        _pathToFollow[0].IsObstructed = true; // Obstruct the next-step node.
+                        if (_pathToFollow.Count == 1) // If this is the last step.
+                        {
+                            _pathToFollow[0].IsObstructed = true; // Obstruct the next-step node.
+                        }
                         _pathToFollow.Remove(_pathToFollow[0]); // Also, the new target will be subtracted from the path list.
                     }
                 }
