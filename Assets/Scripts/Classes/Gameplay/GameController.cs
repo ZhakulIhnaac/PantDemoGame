@@ -38,7 +38,6 @@ namespace Assets.Scripts.Classes.Gameplay
             ObjectPooling = ObjectPooling.Instance;
             GridSystem = GridSystem.Instance;
             GuiController = GuiController.Instance;
-            OnPowerProduce(3f);
 
             /*Event subscriptions*/
             PowerPlant.ProducePower += OnPowerProduce; // PowerPlant's ProducePower is an event send by the power plant buildings.
